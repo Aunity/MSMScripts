@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+import os
+import sys
+
+from msmbuilder.io import *
+import argparse
+import mdtraj as md
+import random as rd
+import pandas as pd
+from multiprocessing import Pool
+from collections import namedtuple
+import msmbuilder
+
+def parse_args():
+    parser = argparse.ArgumentParser(description='Extract sample structure for each state.')
+    parser.add_argument('-msm',help='Path to Markov result meta data. eg:M.pikle',required=True)
+    parser.add_argument('-meta',dest='meta', help="The path of meta files.",required=True)
+    parser.add_argument('-ktraj', help="The clustered label.")
+    parser.add_argument('-n','--n_sample',help='Number of structure to extract for every state.',type=int)
+    parser.add_argument('-T','--threads',help='Number of threads to run this program. default:%(default)s',default=1, type=int)
+    arg = parser.parse_args()
+
+    return arg.msm,arg.meta,arg.ktraj,arg.n_sample,arg.threads
+
+def extract_job(args):
+    state_i, state_inds,meta,top,out_folder = tuple(args)
+    traj = md.join(
+        md.load_frame(meta.iloc[traj_i]['traj_fn'], index=frame_i, top=top)
+        for traj_i, frame_i in state_inds
+     )
+    traj.save("{}/{}.xtc".format(out_folder, state_i))
+
+
+def obtain_abspath(f):
+    if os.path.islink(f):
+        f = os.readlink(f)
+    return os.path.abspath(f)
+
+def main():
+    msm, meta, ktrajs, n_sample, threads = parse_args()
+
+    M = load_meta(obtain_abspath(msm))
+    if os.path.isfile(obtain_abspath(ktrajs)):
+        seq = pd.read_pickle(obtain_abspath(ktrajs))
+        fix_seq = M.transform(seq, mode='fill')
+        print(meta)
+        print(obtain_abspath(meta))
+        meta = pd.read_pickle(obtain_abspath(meta))
+    else:
+        meta, sequence = load_trajs(ktrajs,meta=meta)
+        seq = [sequence[i] for i in range(len(sequence))]
+        fix_seq = M.transform(M.seq, mode='fill')
+
+    flag = 'msm'
+    if hasattr(M,'n_macrostates'):
+        sample = M.draw_samples(fix_seq,n_sample)[:M.n_macrostates]
+        flag = 'macro'
+    else:
+        sample = M.draw_samples(fix_seq,n_sample)
+
+    out_floder = '%s-samples'%flag
+    if not os.path.exists(out_floder):
+        os.mkdir(out_floder)
+    top = meta['top_abs_fn'].values[0]
+    p = Pool(threads)
+    nstate = len(sample)
+    fmt = 10 ** (len(str(nstate//10))+1)
+    args = [(fmt+i,s,meta,top,out_floder) for i,s in enumerate(sample)]
+
+    rs = p.map(extract_job, args)
+    p.close()
+
+if __name__ == "__main__":
+    main()

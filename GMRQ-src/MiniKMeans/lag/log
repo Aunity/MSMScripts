@@ -1,0 +1,85 @@
+/home/ymh/anaconda3/lib/python3.5/site-packages/sklearn/cross_validation.py:44: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. Also note that the interface of the new CV iterators are different from that of this module. This module will be removed in 0.20.
+  "This module will be removed in 0.20.", DeprecationWarning)
+/home/ymh/anaconda3/lib/python3.5/site-packages/sklearn/grid_search.py:43: DeprecationWarning: This module was deprecated in version 0.18 in favor of the model_selection module into which all the refactored classes and functions are moved. This module will be removed in 0.20.
+  DeprecationWarning)
+1 0
+1 1
+1 2
+1 3
+1 4
+2 0
+2 1
+2 2
+2 3
+2 4
+3 0
+3 1
+3 2
+3 3
+3 4
+4 0
+4 1
+4 2
+4 3
+4 4
+5 0
+5 1
+5 2
+5 3
+5 4
+6 0
+6 1
+6 2
+6 3
+6 4
+7 0
+7 1
+7 2
+7 3
+7 4
+8 0
+8 1
+8 2
+8 3
+8 4
+9 0
+9 1
+9 2
+9 3
+9 4
+10 0
+10 1
+10 2
+10 3
+10 4
+20 0
+20 1
+20 2
+20 3
+20 4
+40 0
+40 1
+40 2
+40 3
+40 4
+50 0
+50 1
+50 2
+50 3
+50 4
+         test_score  train_score
+lagtime                         
+1          1.995524     1.998048
+2          1.994881     1.998316
+3          1.995716     1.998289
+4          1.996637     1.998318
+5          1.997618     1.998578
+6          1.997688     1.998600
+7          1.997357     1.998542
+8          1.997896     1.998522
+9          1.997322     1.998685
+10         1.994236     1.998639
+20         1.997482     1.998543
+40         1.996559     1.998684
+50         1.996605     1.998715
+8 gives the best score: 1.9978961070620151
